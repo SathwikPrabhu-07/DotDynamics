@@ -2,17 +2,11 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Plus, Clock, BarChart3, BookOpen, Zap } from "lucide-react";
 
-const recentProblems = [
-  { id: 1, title: "Projectile Motion - 45°", subject: "Mechanics", date: "Feb 10, 2026" },
-  { id: 2, title: "Free Fall with Air Resistance", subject: "Mechanics", date: "Feb 9, 2026" },
-  { id: 3, title: "Simple Pendulum Period", subject: "Oscillations", date: "Feb 8, 2026" },
-];
-
 const stats = [
-  { label: "Simulations Run", value: "24", icon: Zap },
-  { label: "Problems Saved", value: "12", icon: BookOpen },
-  { label: "Hours Spent", value: "8.5", icon: Clock },
-  { label: "Topics Covered", value: "6", icon: BarChart3 },
+  { label: "Simulations Run", value: "0", icon: Zap },
+  { label: "Problems Saved", value: "0", icon: BookOpen },
+  { label: "Hours Spent", value: "0", icon: Clock },
+  { label: "Topics Covered", value: "0", icon: BarChart3 },
 ];
 
 const Dashboard = () => {
@@ -46,21 +40,20 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Recent */}
+      {/* Recent — empty state */}
       <div>
         <h2 className="font-heading text-lg font-semibold text-foreground mb-4">Recent Problems</h2>
-        <div className="rounded-lg border bg-card shadow-card divide-y">
-          {recentProblems.map((p) => (
-            <div key={p.id} className="flex items-center justify-between px-5 py-4">
-              <div>
-                <p className="text-sm font-medium text-foreground">{p.title}</p>
-                <p className="text-xs text-muted-foreground">{p.subject} · {p.date}</p>
-              </div>
-              <Link to="/simulation">
-                <Button variant="ghost" size="sm">Open</Button>
-              </Link>
-            </div>
-          ))}
+        <div className="rounded-lg border bg-card shadow-card">
+          <div className="px-5 py-12 text-center">
+            <Zap className="h-8 w-8 mx-auto text-muted-foreground/40 mb-3" />
+            <p className="text-sm text-muted-foreground">No simulations yet.</p>
+            <p className="text-xs text-muted-foreground mt-1">Start a new problem to see it here.</p>
+            <Link to="/simulation">
+              <Button variant="outline" size="sm" className="mt-4 gap-2">
+                <Plus className="h-3.5 w-3.5" /> New Simulation
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

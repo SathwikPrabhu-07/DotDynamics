@@ -13,6 +13,7 @@ import HistoryPage from "./pages/HistoryPage";
 import SavedLibrary from "./pages/SavedLibrary";
 import SettingsPage from "./pages/SettingsPage";
 import AppLayout from "./components/AppLayout";
+import { TransitionOverlay } from "./components/TransitionOverlay";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <TransitionOverlay />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />

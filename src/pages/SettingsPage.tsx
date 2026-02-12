@@ -44,11 +44,11 @@ const SettingsPage = () => {
         <h2 className="font-heading text-base font-semibold text-foreground">Account</h2>
         <div className="space-y-2">
           <Label>Email</Label>
-          <Input value="user@example.com" disabled />
+          <Input value="" placeholder="Not signed in" disabled />
         </div>
         <div className="space-y-2">
           <Label>Name</Label>
-          <Input defaultValue="Physics Student" />
+          <Input defaultValue="" placeholder="Set your name" />
         </div>
         <Button variant="outline" size="sm">Update Profile</Button>
       </div>

@@ -30,26 +30,29 @@ const AppLayout = ({ children }: Props) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background bg-animated">
       {/* Mobile overlay */}
       {open && (
-        <div className="fixed inset-0 z-30 bg-foreground/20 lg:hidden" onClick={() => setOpen(false)} />
+        <div className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-60 flex-col bg-sidebar text-sidebar-foreground transition-transform lg:static lg:translate-x-0 ${
-          open ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-border/30 transition-transform lg:static lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"
+          }`}
+        style={{
+          background: "linear-gradient(180deg, hsl(240 6% 9%) 0%, hsl(240 6% 7%) 100%)",
+        }}
       >
-        <div className="flex h-16 items-center justify-between px-5 border-b border-sidebar-border">
-          <Link to="/dashboard" className="font-heading text-lg font-bold tracking-tight text-sidebar-foreground">
-            Dot<span className="text-sidebar-primary">Dynamics</span>
+        <div className="flex h-16 items-center justify-between px-5 border-b border-border/20">
+          <Link to="/dashboard" className="font-heading text-lg tracking-tight">
+            <span className="brand-dot">Dot</span><span className="brand-dynamics">Dynamics</span>
           </Link>
-          <button className="lg:hidden text-sidebar-foreground" onClick={() => setOpen(false)}>
+          <button className="lg:hidden text-muted-foreground hover:text-foreground transition-colors" onClick={() => setOpen(false)}>
             <X className="h-5 w-5" />
           </button>
         </div>
+
         <nav className="flex-1 py-4 space-y-1 px-3">
           {navItems.map((item) => {
             const active = pathname === item.to;
@@ -58,22 +61,22 @@ const AppLayout = ({ children }: Props) => {
                 key={item.to}
                 to={item.to}
                 onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                }`}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${active
+                    ? "nav-link-active"
+                    : "nav-link-idle"
+                  }`}
               >
-                <item.icon className="h-4 w-4" />
+                <item.icon className="h-4 w-4" style={active ? { color: "var(--gold-start)" } : undefined} />
                 {item.label}
               </Link>
             );
           })}
         </nav>
-        <div className="p-3 border-t border-sidebar-border">
+
+        <div className="p-3 border-t border-border/20">
           <Link
             to="/"
-            className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"
+            className="nav-link-idle flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium"
           >
             <LogOut className="h-4 w-4" />
             Logout
@@ -83,16 +86,22 @@ const AppLayout = ({ children }: Props) => {
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="flex h-16 items-center gap-4 border-b bg-card px-6">
+        <header className="flex h-16 items-center gap-4 border-b border-border/30 bg-card/40 backdrop-blur-md px-6">
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(true)}>
             <Menu className="h-5 w-5" />
           </Button>
           <div className="flex-1" />
-          <div className="h-8 w-8 rounded-full bg-accent/20 flex items-center justify-center text-accent text-xs font-bold">
+          <div
+            className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold pulse-gold"
+            style={{
+              background: "linear-gradient(135deg, var(--gold-start), var(--gold-end))",
+              color: "#0f0f12",
+            }}
+          >
             U
           </div>
         </header>
-        <main className="flex-1 p-6 md:p-8">{children}</main>
+        <main className="flex-1 p-6 md:p-8 section-enter">{children}</main>
       </div>
     </div>
   );

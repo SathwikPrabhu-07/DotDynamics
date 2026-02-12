@@ -1,15 +1,16 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const SignUp = () => {
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    window.location.href = "/dashboard";
+    navigate("/dashboard");
   };
 
   const update = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -20,7 +21,7 @@ const SignUp = () => {
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <Link to="/" className="font-heading text-2xl font-bold text-foreground tracking-tight">
-            Dot<span className="text-accent">Dynamics</span>
+            <span className="brand-dot">Dot</span><span className="brand-dynamics" style={{ animation: "none" }}>Dynamics</span>
           </Link>
           <p className="mt-2 text-sm text-muted-foreground">Create your account</p>
         </div>
