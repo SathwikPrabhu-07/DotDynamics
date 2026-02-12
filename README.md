@@ -1,216 +1,204 @@
-DotDynamics
-Transforming Physics Word Problems into Interactive Simulations
-1. Project Description
-Problem Statement
+# DotDynamics  
+### Transforming Physics Word Problems into Interactive Simulations
 
-Understanding physics through word problems requires students to mentally visualize abstract motion and relationships between physical quantities. Traditional textbooks and static diagrams often fail to provide dynamic, interactive insight into motion, forces, energy transformations, and optical behavior.
+---
 
-This leads to conceptual gaps, especially in mechanics and wave-based systems.
+## 1. Project Description
 
-Proposed Solution
+### Problem Statement
 
-DotDynamics is an interactive physics visualization platform that converts natural language physics problems into real-time computational simulations.
+Understanding physics through word problems requires students to mentally visualize abstract motion, forces, and relationships between physical quantities. Traditional textbooks and static diagrams often fail to provide dynamic, interactive insight into motion, energy transformations, and optical behavior.
+
+This limitation creates conceptual gaps, particularly in mechanics and wave-based systems.
+
+---
+
+### Proposed Solution
+
+DotDynamics is an interactive physics visualization platform that converts natural language physics word problems into real-time computational simulations.
 
 The system:
 
-Parses physics word problems
+- Parses physics word problems  
+- Extracts key physical parameters  
+- Classifies the type of motion  
+- Generates mathematically accurate simulations  
+- Displays real-time graphs and energy transformations  
+- Enables dynamic parameter manipulation  
 
-Extracts key parameters
+Instead of memorizing equations, users can observe physics in motion.
 
-Classifies the type of motion
+---
 
-Generates mathematically accurate simulations
-
-Displays real-time graphs and energy transformations
-
-Allows dynamic parameter manipulation
-
-Instead of memorizing formulas, users can observe physics in motion.
-
-2. Supported Simulation Engines
+## 2. Supported Simulation Engines
 
 DotDynamics currently supports the following physics domains:
 
-Vertical Motion
+- Vertical Motion  
+- Projectile Motion  
+- Simple Harmonic Motion (SHM)  
+- Circular Motion  
+- Inclined Plane Motion  
+- Rotational Mechanics  
+- Ray Optics (Mirrors & Lenses)  
 
-Projectile Motion
+Each engine is independently modeled using analytical physics equations and rendered through dynamic visualization logic.
 
-Simple Harmonic Motion (SHM)
+---
 
-Circular Motion
+## 3. System Architecture
 
-Inclined Plane Motion
+DotDynamics follows a modular three-layer architecture:
 
-Rotational Mechanics
-
-Ray Optics (Mirrors & Lenses)
-
-Each engine is independently modeled using analytical physics equations and rendered using dynamic visualization logic.
-
-3. System Architecture
-
-The platform follows a modular three-layer architecture:
-
-User → React Frontend → Node.js Backend → Firebase Services
-
-Frontend handles UI and real-time physics rendering.
-
-Backend parses and classifies natural language problems.
-
-Firebase manages authentication and cloud data storage.
-
-Architecture Diagram:
-
-4. Tech Stack Used
-Frontend
-
-React
-
-HTML5 Canvas
-
-Tailwind CSS
-
-Backend
-
-Node.js
-
-Express.js
-
-Database
-
-Firebase Firestore
-
-Authentication
-
-Firebase Google Authentication
+User
+↓
+React Frontend (Visualization Layer)
+↓
+Node.js Backend (Problem Parsing API)
+↓
+Firebase Services (Authentication & Database)
 
 
-5. Key Features
 
-Natural language physics problem parsing
+- **Frontend** handles UI, simulation rendering, and graph generation.  
+- **Backend** processes and classifies natural language physics problems.  
+- **Firebase** manages authentication and cloud-based simulation storage.
 
-Real-time simulation rendering
+### Architecture Diagram
 
-Live parameter manipulation
+(Add architecture image inside `/assets` folder)
 
-Analytical equation-based computation
 
-Dynamic graph generation
 
-Universal energy visualization system
+---
 
-Secure user authentication
+## 4. Tech Stack Used
 
-Cloud-based simulation history
+### Frontend
+- React  
+- HTML5 Canvas  
+- Tailwind CSS  
 
-6. How to Run the Project
-Step 1: Clone Repository
+### Backend
+- Node.js  
+- Express.js  
+
+### Database
+- Firebase Firestore  
+
+### Authentication
+- Firebase Google Authentication  
+
+
+## 5. Key Features
+
+- Natural language physics problem parsing  
+- Real-time simulation rendering  
+- Analytical equation-based computation  
+- Dynamic graph generation  
+- Universal energy visualization system  
+- Live parameter manipulation  
+- Secure Google authentication  
+- Cloud-based simulation history  
+
+---
+
+## 6. How to Run the Project
+
+### Step 1: Clone Repository
+
 git clone <repository-url>
 cd DotDynamics
 
-Step 2: Install Frontend Dependencies
+
+### Step 2: Install Frontend Dependencies
+
 npm install
 
-Step 3: Start Frontend
+
+### Step 3: Start Frontend
+
 npm run dev
 
-Step 4: Start Backend
+
+### Step 4: Start Backend
+
 cd backend
 npm install
 npm run dev
 
 
 Backend runs on:
-
 http://localhost:5000
 
 
 Frontend runs on:
+http://localhost:8080
 
-http://localhost:8080 (or specified port)
 
-7. Environment Setup
+---
+
+## 7. Environment Setup
 
 To run the project successfully:
 
-Create a Firebase project.
-
-Enable:
-
-Firestore Database
-
-Google Authentication
-
-Add Firebase configuration in:
+1. Create a Firebase project.
+2. Enable:
+   - Firestore Database  
+   - Google Authentication  
+3. Add Firebase configuration in:
 
 src/firebaseConfig.js
 
 
-Ensure backend API URL matches frontend configuration.
+4. Ensure backend API URL matches frontend configuration.
 
-8. Dependencies
+---
+
+## 8. Dependencies
 
 Major dependencies include:
 
-react
+- react  
+- firebase  
+- express  
+- node  
 
-firebase
+Refer to `package.json` for the complete dependency list.
 
-express
+---
 
-node
+## 9. Important Instructions
 
-charting/graphing library (if applicable)
+- Do not commit `.env` files.
+- Ensure Firebase configuration is properly set before running.
+- Backend must be running for problem parsing to function.
+- Node.js version 16+ is recommended.
+- Use latest Chrome or Edge browser for best performance.
+- Configure Firestore rules to allow authenticated access.
 
-Refer to package.json for full dependency list.
+---
 
-9. Important Instructions
+## 10. Demo Video and Images (MVP)
 
-Do not commit .env files.
+DriveLink:https://drive.google.com/drive/folders/1_OLkIg4tR6wjNS6ayEeJkrslzs1w1bYM?usp=sharing
 
-Ensure Firebase configuration is properly set before running.
 
-Backend must be running for problem parsing to work.
 
-Node.js version 16+ recommended.
+## 11. Future Scope
 
-For best performance, use latest Chrome or Edge browser.
+- Air resistance modeling  
+- Damped oscillation systems  
+- Advanced optical simulations  
+- Comparative multi-simulation mode  
+- Exportable graph reports  
+- Classroom collaboration features  
 
-Firestore rules must be configured to allow authenticated access.
+---
 
-10. Demo Video (MVP)
-
-Demo Video Link:
-
-Watch Demo Video
-
-(Replace # with actual video link)
-
-11. Demo Screenshots (MVP)
-Projectile Simulation
-
-SHM Simulation
-
-Ray Optics Simulation
-
-(Add screenshots in /assets folder)
-
-12. Future Scope
-
-Air resistance modeling
-
-Damped oscillations
-
-Advanced optical systems
-
-Comparative multi-simulation mode
-
-Exportable graph reports
-
-Classroom collaboration mode
-
-13. Conclusion
+## 12. Conclusion
 
 DotDynamics demonstrates how computational physics, real-time rendering, and structured system architecture can bridge the gap between theoretical equations and conceptual understanding.
 
-It transforms static problems into dynamic experiences."# DotDynamics" 
+It transforms static word problems into dynamic, interactive learning experiences.
+This version is:
