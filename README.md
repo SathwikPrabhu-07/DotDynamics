@@ -1,73 +1,216 @@
-# Welcome to your Lovable project
+DotDynamics
+Transforming Physics Word Problems into Interactive Simulations
+1. Project Description
+Problem Statement
 
-## Project info
+Understanding physics through word problems requires students to mentally visualize abstract motion and relationships between physical quantities. Traditional textbooks and static diagrams often fail to provide dynamic, interactive insight into motion, forces, energy transformations, and optical behavior.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+This leads to conceptual gaps, especially in mechanics and wave-based systems.
 
-## How can I edit this code?
+Proposed Solution
 
-There are several ways of editing your application.
+DotDynamics is an interactive physics visualization platform that converts natural language physics problems into real-time computational simulations.
 
-**Use Lovable**
+The system:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+Parses physics word problems
 
-Changes made via Lovable will be committed automatically to this repo.
+Extracts key parameters
 
-**Use your preferred IDE**
+Classifies the type of motion
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Generates mathematically accurate simulations
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Displays real-time graphs and energy transformations
 
-Follow these steps:
+Allows dynamic parameter manipulation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Instead of memorizing formulas, users can observe physics in motion.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. Supported Simulation Engines
 
-# Step 3: Install the necessary dependencies.
-npm i
+DotDynamics currently supports the following physics domains:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+Vertical Motion
+
+Projectile Motion
+
+Simple Harmonic Motion (SHM)
+
+Circular Motion
+
+Inclined Plane Motion
+
+Rotational Mechanics
+
+Ray Optics (Mirrors & Lenses)
+
+Each engine is independently modeled using analytical physics equations and rendered using dynamic visualization logic.
+
+3. System Architecture
+
+The platform follows a modular three-layer architecture:
+
+User → React Frontend → Node.js Backend → Firebase Services
+
+Frontend handles UI and real-time physics rendering.
+
+Backend parses and classifies natural language problems.
+
+Firebase manages authentication and cloud data storage.
+
+Architecture Diagram:
+
+4. Tech Stack Used
+Frontend
+
+React
+
+HTML5 Canvas
+
+Tailwind CSS
+
+Backend
+
+Node.js
+
+Express.js
+
+Database
+
+Firebase Firestore
+
+Authentication
+
+Firebase Google Authentication
+
+
+5. Key Features
+
+Natural language physics problem parsing
+
+Real-time simulation rendering
+
+Live parameter manipulation
+
+Analytical equation-based computation
+
+Dynamic graph generation
+
+Universal energy visualization system
+
+Secure user authentication
+
+Cloud-based simulation history
+
+6. How to Run the Project
+Step 1: Clone Repository
+git clone <repository-url>
+cd DotDynamics
+
+Step 2: Install Frontend Dependencies
+npm install
+
+Step 3: Start Frontend
 npm run dev
-```
 
-**Edit a file directly in GitHub**
+Step 4: Start Backend
+cd backend
+npm install
+npm run dev
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
 
-**Use GitHub Codespaces**
+Backend runs on:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+http://localhost:5000
 
-## What technologies are used for this project?
 
-This project is built with:
+Frontend runs on:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+http://localhost:8080 (or specified port)
 
-## How can I deploy this project?
+7. Environment Setup
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+To run the project successfully:
 
-## Can I connect a custom domain to my Lovable project?
+Create a Firebase project.
 
-Yes, you can!
+Enable:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Firestore Database
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Google Authentication
+
+Add Firebase configuration in:
+
+src/firebaseConfig.js
+
+
+Ensure backend API URL matches frontend configuration.
+
+8. Dependencies
+
+Major dependencies include:
+
+react
+
+firebase
+
+express
+
+node
+
+charting/graphing library (if applicable)
+
+Refer to package.json for full dependency list.
+
+9. Important Instructions
+
+Do not commit .env files.
+
+Ensure Firebase configuration is properly set before running.
+
+Backend must be running for problem parsing to work.
+
+Node.js version 16+ recommended.
+
+For best performance, use latest Chrome or Edge browser.
+
+Firestore rules must be configured to allow authenticated access.
+
+10. Demo Video (MVP)
+
+Demo Video Link:
+
+Watch Demo Video
+
+(Replace # with actual video link)
+
+11. Demo Screenshots (MVP)
+Projectile Simulation
+
+SHM Simulation
+
+Ray Optics Simulation
+
+(Add screenshots in /assets folder)
+
+12. Future Scope
+
+Air resistance modeling
+
+Damped oscillations
+
+Advanced optical systems
+
+Comparative multi-simulation mode
+
+Exportable graph reports
+
+Classroom collaboration mode
+
+13. Conclusion
+
+DotDynamics demonstrates how computational physics, real-time rendering, and structured system architecture can bridge the gap between theoretical equations and conceptual understanding.
+
+It transforms static problems into dynamic experiences."# DotDynamics" 
