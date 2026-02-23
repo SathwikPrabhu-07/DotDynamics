@@ -1,16 +1,26 @@
 import { useRef, useEffect, useState } from "react";
 import type { SimState } from "./types";
+import { VerticalMotion } from "./physics/VerticalMotion";
 
 // ── Physics Model ──────────────────────────────────────────────
-// Vertical motion under uniform gravity:
-//   y(t) = v₀t − ½gt²
-//   v(t) = v₀ − gt
+// Vertical motion under uniform gravity (semi-implicit Euler):
+//   v(t+dt) = v(t) - g·dt
+//   y(t+dt) = y(t) + v(t+dt)·dt
+//
+// Analytical references:
+//   y(t)  = h₀ + v₀t − ½gt²
+//   v(t)  = v₀ − gt
+//   v²    = v₀² − 2g(y − h₀)
+//   t_peak  = v₀/g
+//   t_flight = (v₀ + √(v₀² + 2g·h₀)) / g
 
 interface VerticalMotionProps {
     /** Initial upward velocity (m/s) */
     initialVelocity: number;
     /** Gravitational acceleration (m/s²) */
     gravity: number;
+    /** Initial height above ground (m). Default 0. */
+    initialHeight?: number;
     /** Simulation state — drives all control logic */
     simState: SimState;
     /** Called when ball returns to ground */
@@ -34,20 +44,9 @@ export interface FrameData {
     height: number;
     velocity: number;
     maxHeight: number;
+    isAtPeak: boolean;
+    isGrounded: boolean;
 }
-
-// ── Pure physics functions ─────────────────────────────────────
-const computeHeight = (v0: number, g: number, t: number) =>
-    v0 * t - 0.5 * g * t * t;
-
-const computeVelocity = (v0: number, g: number, t: number) =>
-    v0 - g * t;
-
-const computeMaxHeight = (v0: number, g: number) =>
-    (v0 * v0) / (2 * g);
-
-const computeFlightTime = (v0: number, g: number) =>
-    (2 * v0) / g;
 
 // ── Drawing helpers ────────────────────────────────────────────
 
@@ -138,6 +137,17 @@ function drawMaxHeightLine(ctx: CanvasRenderingContext2D, w: number, y: number, 
     ctx.restore();
 }
 
+function drawInitialHeightLine(ctx: CanvasRenderingContext2D, w: number, y: number, h0: number) {
+    if (h0 <= 0) return;
+    ctx.save();
+    ctx.strokeStyle = "rgba(59,130,246,0.4)"; ctx.lineWidth = 1; ctx.setLineDash([4, 6]);
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    ctx.setLineDash([]); ctx.fillStyle = "rgba(59,130,246,0.6)";
+    ctx.font = "11px Inter, sans-serif"; ctx.textAlign = "right";
+    ctx.fillText(`h₀: ${h0.toFixed(1)} m`, w - 10, y + 14);
+    ctx.restore();
+}
+
 function lighten(hex: string, n: number) {
     const c = parseInt(hex.replace("#", ""), 16);
     return `rgb(${Math.min(255, (c >> 16) + n)},${Math.min(255, ((c >> 8) & 0xff) + n)},${Math.min(255, (c & 0xff) + n)})`;
@@ -153,6 +163,7 @@ function darken(hex: string, n: number) {
 const VerticalMotionEngine: React.FC<VerticalMotionProps> = ({
     initialVelocity,
     gravity,
+    initialHeight = 0,
     simState,
     onComplete,
     onFrame,
@@ -166,8 +177,6 @@ const VerticalMotionEngine: React.FC<VerticalMotionProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
 
     // ── Ref mirrors for physics props (prevent stale closures) ──
-    const v0Ref = useRef(initialVelocity);
-    const gravityRef = useRef(gravity);
     const onFrameRef = useRef(onFrame);
     const onCompleteRef = useRef(onComplete);
     const simStateRef = useRef(simState);
@@ -178,8 +187,6 @@ const VerticalMotionEngine: React.FC<VerticalMotionProps> = ({
     const showTrailRef = useRef(showTrail);
 
     // Update refs every render — always fresh
-    v0Ref.current = initialVelocity;
-    gravityRef.current = gravity;
     onFrameRef.current = onFrame;
     onCompleteRef.current = onComplete;
     simStateRef.current = simState;
@@ -189,10 +196,14 @@ const VerticalMotionEngine: React.FC<VerticalMotionProps> = ({
     showGridRef.current = showGrid;
     showTrailRef.current = showTrail;
 
+    // ── Physics engine instance ──────────────────────────────
+    const physicsRef = useRef<VerticalMotion>(
+        new VerticalMotion({ initialVelocity, initialHeight, gravity })
+    );
+
     // ── Animation refs (never cause re-renders) ──────────────
     const rafId = useRef<number>(0);
     const prevTimestamp = useRef<number>(0);
-    const simTime = useRef<number>(0);
     const trail = useRef<{ x: number; y: number }[]>([]);
     const trailCounter = useRef(0);
     const completeFired = useRef(false);
@@ -211,16 +222,23 @@ const VerticalMotionEngine: React.FC<VerticalMotionProps> = ({
         return () => obs.disconnect();
     }, []);
 
+    // ── Helper: rebuild physics instance with current params ──
+    function rebuildPhysics() {
+        physicsRef.current = new VerticalMotion({
+            initialVelocity,
+            initialHeight,
+            gravity,
+        });
+    }
+
     // ── Core functions — read from refs, zero stale closures ──
 
-    function renderFrame(t: number) {
+    function renderFrame(state: { position: number; velocity: number; time: number; maxHeight: number; isAtPeak: boolean; isGrounded: boolean }) {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        const v0 = v0Ref.current;
-        const g = gravityRef.current;
         const bRadius = ballRadiusRef.current;
         const bColor = ballColorRef.current;
 
@@ -230,13 +248,15 @@ const VerticalMotionEngine: React.FC<VerticalMotionProps> = ({
         const ch = canvas.height / dpr;
 
         const groundY = ch - 40;
-        const maxH = computeMaxHeight(v0, g);
+        const analyticalMaxH = physicsRef.current.analyticalMaxHeight;
+        const maxH = Math.max(analyticalMaxH, state.maxHeight, 1);
         const usable = groundY - 50;
-        const scale = maxH > 0 ? usable / (maxH * 1.15) : 1;
+        const scale = usable / (maxH * 1.15);
         const ballX = cw / 2;
 
-        const h = Math.max(0, computeHeight(v0, g, t));
-        const v = computeVelocity(v0, g, t);
+        const h = state.position;
+        const v = state.velocity;
+        const t = state.time;
         const ballY = groundY - h * scale;
 
         // Clear
@@ -248,7 +268,9 @@ const VerticalMotionEngine: React.FC<VerticalMotionProps> = ({
         ctx.fillStyle = bg; ctx.fillRect(0, 0, cw, ch);
 
         if (showGridRef.current) drawGrid(ctx, cw, ch, groundY, scale, maxH);
-        if (maxH > 0) drawMaxHeightLine(ctx, cw, groundY - maxH * scale, maxH);
+        // Draw initial height reference line
+        if (initialHeight > 0) drawInitialHeightLine(ctx, cw, groundY - initialHeight * scale, initialHeight);
+        if (maxH > 0) drawMaxHeightLine(ctx, cw, groundY - analyticalMaxH * scale, analyticalMaxH);
         drawGround(ctx, cw, groundY);
         if (showTrailRef.current) drawTrail(ctx, trail.current, bColor);
         drawBall(ctx, ballX, ballY, bRadius, bColor);
@@ -263,7 +285,14 @@ const VerticalMotionEngine: React.FC<VerticalMotionProps> = ({
         ctx.fillText(`v = ${v.toFixed(2)} m/s`, 10, 52);
         ctx.restore();
 
-        onFrameRef.current?.({ time: t, height: h, velocity: v, maxHeight: maxH });
+        onFrameRef.current?.({
+            time: t,
+            height: h,
+            velocity: v,
+            maxHeight: analyticalMaxH,
+            isAtPeak: state.isAtPeak,
+            isGrounded: state.isGrounded,
+        });
     }
 
     // ── Centralized lifecycle controls ──────────────────────────
@@ -278,7 +307,7 @@ const VerticalMotionEngine: React.FC<VerticalMotionProps> = ({
 
     function resetSim() {
         stopSim();
-        simTime.current = 0;
+        rebuildPhysics();
         trail.current = [];
         trailCounter.current = 0;
         completeFired.current = false;
@@ -294,36 +323,29 @@ const VerticalMotionEngine: React.FC<VerticalMotionProps> = ({
             prevTimestamp.current = timestamp;
             const deltaSec = Math.min(deltaMs / 1000, 0.05);
 
-            simTime.current += deltaSec;
-            const t = simTime.current;
-
-            // Flight time from current params (read refs)
-            const flightTime = computeFlightTime(v0Ref.current, gravityRef.current);
+            // Advance physics via incremental update
+            const state = physicsRef.current.update(deltaSec);
 
             // Record trail
             trailCounter.current++;
             if (trailCounter.current % 3 === 0) {
                 const canvas = canvasRef.current;
                 if (canvas) {
-                    const v0 = v0Ref.current;
-                    const g = gravityRef.current;
                     const dpr = window.devicePixelRatio || 1;
                     const cw = canvas.width / dpr;
                     const ch = canvas.height / dpr;
                     const groundY = ch - 40;
-                    const maxH = computeMaxHeight(v0, g);
+                    const maxH = Math.max(physicsRef.current.analyticalMaxHeight, state.maxHeight, 1);
                     const usable = groundY - 50;
-                    const scale = maxH > 0 ? usable / (maxH * 1.15) : 1;
-                    const h = Math.max(0, computeHeight(v0, g, t));
-                    trail.current.push({ x: cw / 2, y: groundY - h * scale });
+                    const scale = usable / (maxH * 1.15);
+                    trail.current.push({ x: cw / 2, y: groundY - state.position * scale });
                     if (trail.current.length > 200) trail.current = trail.current.slice(-200);
                 }
             }
 
             // Ground collision → completed
-            if (t >= flightTime && flightTime > 0) {
-                simTime.current = flightTime;
-                renderFrame(flightTime);
+            if (state.isGrounded) {
+                renderFrame(state);
                 if (!completeFired.current) {
                     completeFired.current = true;
                     onCompleteRef.current?.();
@@ -332,7 +354,7 @@ const VerticalMotionEngine: React.FC<VerticalMotionProps> = ({
                 return;
             }
 
-            renderFrame(t);
+            renderFrame(state);
             rafId.current = requestAnimationFrame(tick);
         };
 
@@ -344,22 +366,37 @@ const VerticalMotionEngine: React.FC<VerticalMotionProps> = ({
     // ══════════════════════════════════════════════════════════
     useEffect(() => {
         switch (simState) {
-            case "idle":
+            case "idle": {
                 resetSim();
-                renderFrame(0);
-                onFrameRef.current?.({ time: 0, height: 0, velocity: v0Ref.current, maxHeight: computeMaxHeight(v0Ref.current, gravityRef.current) });
+                const initState = physicsRef.current.getState();
+                renderFrame(initState);
+                onFrameRef.current?.({
+                    time: 0,
+                    height: initialHeight,
+                    velocity: initialVelocity,
+                    maxHeight: physicsRef.current.analyticalMaxHeight,
+                    isAtPeak: false,
+                    isGrounded: false,
+                });
                 break;
+            }
             case "playing":
                 completeFired.current = false;
                 startSim();
                 break;
-            case "paused":
+            case "paused": {
                 stopSim();
-                renderFrame(simTime.current);
+                const pausedState = physicsRef.current.getState();
+                renderFrame(pausedState);
                 break;
-            case "completed":
+            }
+            case "completed": {
                 stopSim();
+                // Re-render the final frame so canvas is NOT blank
+                const completedState = physicsRef.current.getState();
+                renderFrame(completedState);
                 break;
+            }
         }
         return () => stopSim();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -372,15 +409,31 @@ const VerticalMotionEngine: React.FC<VerticalMotionProps> = ({
         const state = simStateRef.current;
         if (state === "idle") {
             resetSim();
-            renderFrame(0);
+            const initState = physicsRef.current.getState();
+            renderFrame(initState);
         } else if (state === "playing") {
             resetSim();
             startSim();
         } else if (state === "paused") {
-            renderFrame(simTime.current);
+            const pausedState = physicsRef.current.getState();
+            renderFrame(pausedState);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [initialVelocity, gravity]);
+    }, [initialVelocity, gravity, initialHeight]);
+
+    // ── Redraw on canvas resize (dims change clears canvas) ──
+    useEffect(() => {
+        const state = simStateRef.current;
+        if (state === "idle") {
+            const initState = physicsRef.current.getState();
+            renderFrame(initState);
+        } else if (state === "paused" || state === "completed") {
+            const currentState = physicsRef.current.getState();
+            renderFrame(currentState);
+        }
+        // playing: RAF loop handles rendering
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dims]);
 
     // ── Canvas sizing ────────────────────────────────────────
     const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;

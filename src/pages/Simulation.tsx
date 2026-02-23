@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
@@ -21,6 +22,7 @@ import type { SimState } from "@/components/engines/types";
 import { useSimulationRecorder } from "@/components/engines/analysis/useSimulationRecorder";
 import AnalysisPanel from "@/components/engines/analysis/AnalysisPanel";
 import type { RecordedFrame } from "@/components/engines/analysis/types";
+import { saveSimulation } from "@/services/firestoreService";
 
 // ── Types ──────────────────────────────────────────────────────
 interface AdjustableParam {
@@ -68,6 +70,45 @@ const RAY_OPTICS_CLASSES = ["ray_optics"];
 // ── Component ──────────────────────────────────────────────────
 const Simulation = () => {
   const { toast } = useToast();
+  const location = useLocation();
+
+  // ── Load saved simulation from History "View" button ─────
+  const loadedFromHistory = useRef(false);
+  useEffect(() => {
+    if (loadedFromHistory.current) return;
+    const navState = location.state as {
+      problem?: string;
+      problem_class?: string;
+      problem_label?: string;
+      parameters?: Record<string, number>;
+    } | null;
+    if (!navState?.problem_class) return;
+    loadedFromHistory.current = true;
+
+    // Pre-fill the problem text
+    setProblem(navState.problem || "");
+
+    // Build a fake AnalyzeResponse so the engine renders
+    const fakeResponse: AnalyzeResponse = {
+      problem_class: navState.problem_class,
+      problem_label: navState.problem_label || navState.problem_class.replace(/_/g, " "),
+      parameters: navState.parameters || { ...DEFAULT_PARAMS },
+      adjustable_parameters: [],
+      relationships: [],
+      suggested_visual_template: "",
+      visual_primitives: [],
+    };
+    setSimulationData(fakeResponse);
+    setParams(navState.parameters || { ...DEFAULT_PARAMS });
+    setSliders([...DEFAULT_SLIDERS]);
+    setResetKey((k) => k + 1);
+
+    toast({
+      title: `Loaded: ${fakeResponse.problem_label}`,
+      description: "Press Play to start the simulation.",
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state]);
 
   // Input
   const [problem, setProblem] = useState("");
@@ -229,23 +270,24 @@ const Simulation = () => {
   }, [params]);
 
   /** Save */
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!simulationData) {
       toast({ title: "Nothing to save", description: "Visualize a problem first.", variant: "destructive" });
       return;
     }
-    const saved = JSON.parse(localStorage.getItem("dotdynamics_saved") || "[]");
-    saved.push({
-      id: Date.now(),
-      title: problem.slice(0, 60),
-      problem,
-      problem_class: simulationData.problem_class,
-      problem_label: simulationData.problem_label,
-      parameters: params,
-      savedAt: new Date().toISOString(),
-    });
-    localStorage.setItem("dotdynamics_saved", JSON.stringify(saved));
-    toast({ title: "Saved!", description: `"${problem.slice(0, 40)}..." saved to library.` });
+    try {
+      await saveSimulation({
+        title: problem.slice(0, 60),
+        problem,
+        problem_class: simulationData.problem_class,
+        problem_label: simulationData.problem_label,
+        parameters: params,
+      });
+      toast({ title: "Saved!", description: `"${problem.slice(0, 40)}..." saved to library.` });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to save";
+      toast({ title: "Save Error", description: message, variant: "destructive" });
+    }
   };
 
   // ── Engine callbacks ───────────────────────────────────────
@@ -322,7 +364,10 @@ const Simulation = () => {
       const vy0 = v0 * Math.sin(angleRad);
       return (2 * vy0) / gv;
     }
-    return (2 * v0) / gv; // vertical motion
+    // Vertical motion — quadratic root: (v₀ + √(v₀² + 2g·h₀)) / g
+    const h0 = params.initial_height ?? 0;
+    const disc = v0 * v0 + 2 * gv * h0;
+    return disc >= 0 ? (v0 + Math.sqrt(disc)) / gv : (2 * v0) / gv;
   })();
 
   // ── Button state logic ─────────────────────────────────────
@@ -397,9 +442,10 @@ const Simulation = () => {
             <VerticalMotionEngine
               initialVelocity={params.initial_velocity ?? params.velocity ?? 20}
               gravity={params.gravity ?? 9.8}
+              initialHeight={params.initial_height ?? 0}
               simState={simState}
               onFrame={(v) => {
-                handleEngineFrame(v);
+                handleEngineFrame({ time: v.time, height: v.height, velocity: v.velocity, maxHeight: v.maxHeight });
                 const pc = simulationData?.problem_class || "kinematics_vertical_motion";
                 recordAnalysisFrame(v.time, 0, v.height, v.velocity, 0, v.velocity, -(params.gravity ?? 9.8), v.height, v.height, pc, params);
               }}

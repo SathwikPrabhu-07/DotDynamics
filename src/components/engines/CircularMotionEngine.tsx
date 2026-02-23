@@ -497,6 +497,8 @@ const CircularMotionEngine: React.FC<CircularMotionProps> = ({
                 // Circular motion doesn't naturally complete,
                 // but keep for API consistency
                 stopLoop();
+                // Re-render the final frame so canvas is NOT blank
+                renderFrame(simTime.current);
                 break;
         }
         return () => stopLoop();
@@ -516,6 +518,16 @@ const CircularMotionEngine: React.FC<CircularMotionProps> = ({
             renderFrame(simTime.current);
         }
     }, [radius, omega]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // ── Redraw on canvas resize (dims change clears canvas) ──
+    useEffect(() => {
+        if (simState === "idle") {
+            renderFrame(0);
+        } else if (simState === "paused" || simState === "completed") {
+            renderFrame(simTime.current);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dims]);
 
     const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
 

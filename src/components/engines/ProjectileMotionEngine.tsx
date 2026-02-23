@@ -592,6 +592,8 @@ const ProjectileMotionEngine: React.FC<ProjectileMotionProps> = ({
                 break;
             case "completed":
                 stopSim();
+                // Re-render the final frame so canvas is NOT blank
+                renderFrame(simTime.current);
                 break;
         }
         return () => stopSim();
@@ -614,6 +616,17 @@ const ProjectileMotionEngine: React.FC<ProjectileMotionProps> = ({
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [initialVelocity, angle, gravity, initialHeight]);
+
+    // ── Redraw on canvas resize (dims change clears canvas) ──
+    useEffect(() => {
+        const state = simStateRef.current;
+        if (state === "idle") {
+            renderFrame(0);
+        } else if (state === "paused" || state === "completed") {
+            renderFrame(simTime.current);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dims]);
 
     const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
 

@@ -358,6 +358,16 @@ const SimpleHarmonicMotionEngine: React.FC<SHMProps> = ({
         }
     }, [mass, k, amplitude]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // ── Redraw on canvas resize (dims change clears canvas) ──
+    useEffect(() => {
+        if (simState === "idle") {
+            renderFrame(0);
+        } else if (simState === "paused" || simState === "completed") {
+            renderFrame(simTime.current);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dims]);
+
     return (
         <div ref={containerRef} className="w-full h-full relative">
             <canvas ref={canvasRef} style={{ width: dims.w, height: dims.h }} />

@@ -839,3 +839,56 @@
     display: none;
   }
 }
+
+/* ══════════════════════════════════════════════════════════
+   BRAND LOGO VARIABLES
+   ══════════════════════════════════════════════════════════ */
+
+:root {
+  --brand-bg: #1a1a26;
+  /* dark charcoal behind logo */
+  --brand-yellow: #f5c518;
+  /* matches logo gold */
+  --brand-black: #1e1e2e;
+  /* matches logo pill background */
+}
+
+/* ══════════════════════════════════════════════════════════
+   LANDING NAVBAR
+   ══════════════════════════════════════════════════════════ */
+
+.landing-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  background: rgba(26, 26, 34, 0.75);
+  border-bottom: 1px solid rgba(200, 182, 255, 0.08);
+}
+
+.landing-nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding-inline: 1.5rem;
+}
+
+.landing-nav__links {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.landing-nav__link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.landing-nav__link:hover {
+  color: hsl(var(--foreground));
+}

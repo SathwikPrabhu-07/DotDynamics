@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
-import { Link, useLocation } from "react-router-dom";
+import Logo from "@/components/Logo";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Plus,
@@ -12,6 +13,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { signOutUser } from "@/services/authService";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
@@ -27,7 +30,19 @@ interface Props {
 
 const AppLayout = ({ children }: Props) => {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
+
+  const handleLogout = async () => {
+    await signOutUser();
+    navigate("/");
+  };
+
+  // User display info
+  const displayName = user?.displayName || user?.email || "User";
+  const initial = displayName.charAt(0).toUpperCase();
+  const photoURL = user?.photoURL;
 
   return (
     <div className="flex min-h-screen bg-background bg-animated">
@@ -45,9 +60,7 @@ const AppLayout = ({ children }: Props) => {
         }}
       >
         <div className="flex h-16 items-center justify-between px-5 border-b border-border/20">
-          <Link to="/dashboard" className="font-heading text-lg tracking-tight">
-            <span className="brand-dot">Dot</span><span className="brand-dynamics">Dynamics</span>
-          </Link>
+          <Logo variant="full" size="md" to="/dashboard" />
           <button className="lg:hidden text-muted-foreground hover:text-foreground transition-colors" onClick={() => setOpen(false)}>
             <X className="h-5 w-5" />
           </button>
@@ -62,8 +75,8 @@ const AppLayout = ({ children }: Props) => {
                 to={item.to}
                 onClick={() => setOpen(false)}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${active
-                    ? "nav-link-active"
-                    : "nav-link-idle"
+                  ? "nav-link-active"
+                  : "nav-link-idle"
                   }`}
               >
                 <item.icon className="h-4 w-4" style={active ? { color: "var(--gold-start)" } : undefined} />
@@ -74,13 +87,13 @@ const AppLayout = ({ children }: Props) => {
         </nav>
 
         <div className="p-3 border-t border-border/20">
-          <Link
-            to="/"
-            className="nav-link-idle flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium"
+          <button
+            onClick={handleLogout}
+            className="nav-link-idle flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium w-full text-left"
           >
             <LogOut className="h-4 w-4" />
             Logout
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -91,15 +104,24 @@ const AppLayout = ({ children }: Props) => {
             <Menu className="h-5 w-5" />
           </Button>
           <div className="flex-1" />
-          <div
-            className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold pulse-gold"
-            style={{
-              background: "linear-gradient(135deg, var(--gold-start), var(--gold-end))",
-              color: "#0f0f12",
-            }}
-          >
-            U
-          </div>
+          <span className="text-sm text-muted-foreground mr-2 hidden sm:block">{displayName}</span>
+          {photoURL ? (
+            <img
+              src={photoURL}
+              alt={displayName}
+              className="h-8 w-8 rounded-full object-cover pulse-gold"
+            />
+          ) : (
+            <div
+              className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold pulse-gold"
+              style={{
+                background: "linear-gradient(135deg, var(--gold-start), var(--gold-end))",
+                color: "#0f0f12",
+              }}
+            >
+              {initial}
+            </div>
+          )}
         </header>
         <main className="flex-1 p-6 md:p-8 section-enter">{children}</main>
       </div>

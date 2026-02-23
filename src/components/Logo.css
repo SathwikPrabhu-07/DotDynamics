@@ -1,0 +1,52 @@
+/* ══════════════════════════════════════════════
+   Logo Component Styles
+   ══════════════════════════════════════════════ */
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  text-decoration: none;
+  /* Subtle hover glow matching brand gold */
+  transition: filter 0.25s ease, opacity 0.2s ease;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 8px rgba(245, 197, 24, 0.45));
+  opacity: 0.95;
+}
+
+.logo:focus-visible {
+  outline: 2px solid var(--gold-mid);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.logo img {
+  display: block;
+  width: auto;
+  /* Keep crisp on retina */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* ── Size variants ── */
+.logo--sm img {
+  height: 32px;
+}
+
+.logo--md img {
+  height: 40px;
+}
+
+.logo--lg img {
+  height: 48px;
+}
+
+/* ── Mobile: all logos shrink to 32px ── */
+@media (max-width: 768px) {
+  .logo--md img,
+  .logo--lg img {
+    height: 32px;
+  }
+}

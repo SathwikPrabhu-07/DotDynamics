@@ -469,6 +469,16 @@ const ForceInteractionEngine: React.FC<ForceInteractionProps> = ({
         }
     }, [angle, mass, frictionCoefficient, gravity, inclineLength]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // ── Redraw on canvas resize (dims change clears canvas) ──
+    useEffect(() => {
+        if (simState === "idle") {
+            renderFrame(0);
+        } else if (simState === "paused" || simState === "completed") {
+            renderFrame(simTime.current);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dims]);
+
     const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
 
     return (

@@ -461,6 +461,8 @@ const PulleyEngine: React.FC<PulleyEngineProps> = ({
                 break;
             case "completed":
                 stopSim();
+                // Re-render the final frame so canvas is NOT blank
+                renderFrame(simTime.current);
                 break;
         }
         return () => stopSim();
@@ -483,6 +485,17 @@ const PulleyEngine: React.FC<PulleyEngineProps> = ({
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mass1, mass2, gravity]);
+
+    // ── Redraw on canvas resize (dims change clears canvas) ──
+    useEffect(() => {
+        const state = simStateRef.current;
+        if (state === "idle") {
+            renderFrame(0);
+        } else if (state === "paused" || state === "completed") {
+            renderFrame(simTime.current);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dims]);
 
     // ── Canvas sizing ────────────────────────────────────────
     const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;

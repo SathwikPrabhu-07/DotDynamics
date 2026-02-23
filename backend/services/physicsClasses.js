@@ -13,7 +13,7 @@ const physicsClasses = {
       "thrown vertically", "height", "drop", "falling", "thrown straight up"
     ],
     defaultParams: {
-      gravity: 9.8,
+      gravity: 9.81,
       initial_velocity: 0,
       initial_height: 0,
       mass: 1,

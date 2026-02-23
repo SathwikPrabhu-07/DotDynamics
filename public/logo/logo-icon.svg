@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="DotDynamics icon">
+  <title>DotDynamics</title>
+  <!-- Dark circle background -->
+  <circle cx="32" cy="32" r="31" fill="#1a1a26"/>
+  <!-- Parabolic arc trail -->
+  <path d="M 14 50 Q 20 20 50 18" fill="none" stroke="#f5c518" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Dotted trail -->
+  <circle cx="22" cy="36" r="2" fill="#f5c518" opacity="0.9"/>
+  <circle cx="31" cy="26" r="2" fill="#f5c518" opacity="0.75"/>
+  <circle cx="41" cy="21" r="2" fill="#f5c518" opacity="0.6"/>
+  <!-- Main yellow ball -->
+  <circle cx="14" cy="50" r="7" fill="#f5c518"/>
+  <circle cx="14" cy="50" r="7" fill="url(#iconBallGrad)"/>
+  <defs>
+    <radialGradient id="iconBallGrad" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#ffd84d"/>
+      <stop offset="100%" stop-color="#f5a500"/>
+    </radialGradient>
+  </defs>
+</svg>

@@ -1,0 +1,69 @@
+/* ══════════════════════════════════════════════════════════
+   SCROLL VELOCITY — Marquee
+   ══════════════════════════════════════════════════════════ */
+
+.sv-section {
+    position: relative;
+    padding: 2rem 0;
+    overflow: hidden;
+    border-top: 1px solid rgba(200, 182, 255, 0.08);
+    border-bottom: 1px solid rgba(200, 182, 255, 0.08);
+    background: rgba(15, 15, 20, 0.4);
+}
+
+.sv-parallax {
+    position: relative;
+    overflow: hidden;
+    padding: 0.25rem 0;
+}
+
+.sv-scroller {
+    display: flex;
+    white-space: nowrap;
+    text-align: center;
+    font-family: var(--font-heading, 'Space Grotesk', sans-serif);
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.sv-scroller span {
+    flex-shrink: 0;
+    background: linear-gradient(135deg,
+            var(--gold-start, #ffd84d) 0%,
+            var(--gold-mid, #f5c518) 40%,
+            var(--gold-end, #ffb800) 70%,
+            var(--lavender, #c8b6ff) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 8px rgba(245, 197, 24, 0.15));
+    transition: filter 0.3s ease;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+    .sv-scroller {
+        font-size: 5rem;
+        line-height: 5rem;
+    }
+
+    .sv-section {
+        padding: 3rem 0;
+    }
+}
+
+@media (min-width: 1280px) {
+    .sv-scroller {
+        font-size: 6rem;
+        line-height: 6rem;
+    }
+}
+
+/* ── Reduced Motion ── */
+@media (prefers-reduced-motion: reduce) {
+    .sv-scroller {
+        animation: none !important;
+    }
+}
