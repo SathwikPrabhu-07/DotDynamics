@@ -44,7 +44,7 @@ interface AnalyzeResponse {
 }
 
 // ── Constants ──────────────────────────────────────────────────
-const API_URL = "http://localhost:5000/analyze";
+const API_URL = "/api/analyze";
 
 const DEFAULT_PARAMS: Record<string, number> = {
   gravity: 9.8, mass: 1, angle: 45, velocity: 20,
@@ -185,7 +185,6 @@ const Simulation = () => {
     try {
       const response = await fetch(API_URL, {
         method: "POST",
-        mode: "cors",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ problem: trimmed }),
       });

@@ -84,3 +84,4 @@ coverage/
 *.seed
 *.pid.lock
 .cache/
+.vercel
