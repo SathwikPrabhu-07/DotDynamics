@@ -1,5 +1,3 @@
----
-
 # 🔷 DotDynamics
 
 ### Interactive Physics Simulation Platform
