@@ -8,7 +8,7 @@
 
 DotDynamics is a full-stack physics simulation platform that converts natural language physics problems into **interactive visual simulations and synchronized graphs**.
 
-Instead of solving equations on paper, students can **see physics in motion** — observing trajectories, forces, and energy transformations in real time.
+Instead of solving equations on paper, students can **see physics in motion**, observing trajectories, forces, and energy transformations in real time.
 
 ---
 
@@ -61,7 +61,9 @@ The user enters a physics word problem.
 
 Example:
 
-> "A ball is thrown at 25 m/s at 45°."
+```
+A ball is thrown at 25 m/s at 45°.
+```
 
 ---
 
@@ -78,7 +80,7 @@ The request is sent to the **Node.js backend**, which:
 
 ## 3️⃣ Physics Engine Selection
 
-Based on the classification, the correct physics engine is selected.
+Based on classification, the correct physics engine is activated.
 
 Supported engines include:
 
@@ -90,7 +92,7 @@ Supported engines include:
 * Rotational Mechanics Engine
 * Ray Optics Engine
 
-Each engine is built using **analytical physics equations**.
+Each engine is implemented using **analytical physics equations**.
 
 ---
 
@@ -105,7 +107,7 @@ Frame-by-frame computation updates:
 * acceleration
 * energy
 
-Animations are **computed live**, not pre-rendered.
+Animations are **computed live**, not pre-recorded.
 
 ---
 
@@ -118,7 +120,7 @@ Each simulation automatically generates synchronized graphs:
 * Energy vs Time
 * Angular motion graphs (for rotational systems)
 
-Graphs update in real time with the simulation.
+Graphs update **in real time with the simulation**.
 
 ---
 
@@ -140,7 +142,7 @@ Students can observe **energy conservation and transformations dynamically**.
 
 ## 7️⃣ Parameter Manipulation
 
-Users can adjust simulation parameters:
+Users can modify simulation parameters:
 
 * Velocity
 * Angle
@@ -152,7 +154,7 @@ Users can adjust simulation parameters:
 * Friction
 * Optical distances
 
-Simulations update instantly when parameters change.
+Simulations recalculate instantly.
 
 ---
 
@@ -163,7 +165,7 @@ Simulations update instantly when parameters change.
 * Google Authentication via Firebase
 * Secure login system
 
-### ☁ Cloud Database
+### ☁ Database
 
 Firestore stores:
 
@@ -172,14 +174,12 @@ Firestore stores:
 * simulation parameters
 * timestamps
 
----
-
 ### 📜 Simulation History
 
 Users can:
 
 * view saved simulations
-* reload past configurations
+* reload previous configurations
 * delete simulations
 
 ---
@@ -187,28 +187,16 @@ Users can:
 # 🏗 System Architecture
 
 ```
-              +----------------------+
-              |        User          |
-              +----------+-----------+
-                         |
-                         |
-              +----------v-----------+
-              |     React Frontend   |
-              | UI + Physics Canvas  |
-              +----------+-----------+
-                         |
-                         | API Requests
-                         |
-              +----------v-----------+
-              |     Node.js Backend  |
-              |   Problem Parser API |
-              +----------+-----------+
-                         |
-                         |
-              +----------v-----------+
-              |       Firebase       |
-              | Auth + Firestore DB  |
-              +----------------------+
+User
+  │
+  ▼
+React Frontend (UI + Physics Rendering)
+  │
+  ▼
+Node.js Backend (Problem Parsing API)
+  │
+  ▼
+Firebase (Authentication + Firestore Database)
 ```
 
 ---
@@ -221,14 +209,10 @@ Users can:
 * HTML5 Canvas
 * Tailwind CSS
 
----
-
 ## Backend
 
 * Node.js
 * Express.js
-
----
 
 ## Cloud Services
 
@@ -249,11 +233,9 @@ Users can:
 * Rotational Mechanics
 * Simple Harmonic Motion
 
----
-
 ## Optics
 
-* Ray Tracing (Mirrors and Lenses)
+* Ray Tracing (Mirrors & Lenses)
 
 ---
 
@@ -268,7 +250,7 @@ All demo videos, screenshots, and project visuals are available here:
 This folder contains:
 
 * simulation demos
-* project UI screenshots
+* UI screenshots
 * visual explanations
 
 ---
@@ -306,7 +288,7 @@ node server.js
 npm start
 ```
 
-The application will run locally on:
+The application will run on:
 
 ```
 http://localhost:3000
@@ -320,37 +302,25 @@ http://localhost:3000
 
 Users sign in using **Google Authentication**.
 
----
-
 ### Step 2 — Enter Physics Problem
 
 User inputs a physics word problem.
-
----
 
 ### Step 3 — Backend Processing
 
 Backend extracts parameters and selects the appropriate physics engine.
 
----
-
 ### Step 4 — Simulation Rendering
 
 The frontend computes motion and renders simulation using Canvas.
-
----
 
 ### Step 5 — Graph Generation
 
 Real-time graphs are generated alongside the simulation.
 
----
-
 ### Step 6 — Parameter Adjustment
 
 Users modify simulation parameters to explore different outcomes.
-
----
 
 ### Step 7 — Save Simulation
 
@@ -380,18 +350,18 @@ DotDynamics helps students:
 * visualize abstract physics concepts
 * experiment interactively with parameters
 
-It converts **static problem solving into dynamic learning**.
+It transforms **static problem solving into dynamic learning**.
 
 ---
 
 # 🧪 Future Improvements
 
-Potential future enhancements include:
+Potential future enhancements:
 
 * air resistance modeling
 * damped oscillations
 * multi-body simulation systems
-* 3D physics visualization
+* 3D visualization
 * comparative simulation mode
 * classroom collaboration tools
 * exportable graph reports
