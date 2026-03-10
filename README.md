@@ -9,6 +9,11 @@ DotDynamics is a full-stack physics simulation platform that converts natural la
 Instead of solving equations on paper, students can **see physics in motion**, observing trajectories, forces, and energy transformations in real time.
 
 ---
+## 🌐 Live Demo
+
+Try the deployed application here:
+
+👉 https://dot-dynamics.vercel.app/
 
 # 🌍 Vision
 
