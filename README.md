@@ -222,6 +222,7 @@ Firebase (Authentication + Firestore Database)
 * Firebase Authentication
 * Firebase Firestore
 * Firebase Hosting
+* MongoDB Database
 
 ---
 
