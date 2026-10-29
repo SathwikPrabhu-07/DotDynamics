@@ -170,7 +170,7 @@ Simulations recalculate instantly.
 
 ### ☁ Database
 
-Firestore stores:
+Firestore and MongoDB stores:
 
 * user profile
 * saved simulations
